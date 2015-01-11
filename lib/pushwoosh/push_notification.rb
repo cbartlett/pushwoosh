@@ -25,7 +25,9 @@ module Pushwoosh
     end
 
     def notify_all(message, options= {})
-      options.merge!(content: Helpers.limit_string(message, STRING_BYTE_LIMIT))
+      if message.present?
+        options.merge!(content: Helpers.limit_string(message, STRING_BYTE_LIMIT))
+      end
       create_message(options)
     end
 
@@ -39,10 +41,8 @@ module Pushwoosh
     private
 
     def create_message(notification_options = {})
-      fail Error, 'Message is missing' if notification_options[:content].empty?
-      response = Request.post("/createMessage",
-        body: build_request(notification_options).to_json)
-     Response.new(response.parsed_response.with_indifferent_access)
+      response = Request.post("/createMessage", body: build_request(notification_options).to_json)
+      Response.new(response.parsed_response.with_indifferent_access)
     end
 
     def build_request(notification_options = {})
